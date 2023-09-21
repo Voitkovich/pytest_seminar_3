@@ -1,44 +1,26 @@
-"""Задание 1.
-Условие:
-Дополнить проект тестами, проверяющими команды вывода списка файлов (l)
-и разархивирования с путями (x)."""
-import subprocess
+from checks import checkout
+import pytest
+import yaml
+
+with open('config.yaml') as f:
+    data = yaml.safe_load(f)
 
 
-def checkout(cmd, text):
-    result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, encoding='utf-8')
-    if text in result.stdout and result.returncode == 0:
-        return True
-    else:
-        return False
+# @pytest.fixture()
+# def make_folders():
+#     return checkout(f"mkdir {data['folderin']} {data['folderout']} {data['folderext']}", '')
+
+class TestPositive:
+
+    def test_step1(self):
+        assert checkout(f"cd {data['folderin']}; 7z a {data['folderout']}/arh1", 'Everything is Ok'), 'test_step1 FAIL'
+
+    def test_step2(self):
+        assert checkout(f"cd {data['folderout']}; 7z d arh1.7z", 'Everything is Ok'), 'test_step2 FAIL'
 
 
-folderin = '/home/user/folder1'
-folderout = '/home/user/out'
-folderext = '/home/user/folder'
+#def test_step2():
+ #   assert checkout(f'cd {folderext}; 7z u {folderout}/arh1', 'Everything is ok'), 'test_step3 FAIL'
 
-
-def test_step1():
-    # test1
-    assert checkout(f"cd	{folderext};	7z	a	{folderout}", "Everything is Ok"), "test1 FAIL"
-
-
-def test_step2():
-    # test2
-    assert checkout(f"cd	{folderout};	7z	e	arx2.7z	-o/{folderin} -y",
-                    "Everything is Ok"), "test2 FAIL"
-
-
-def test_step3():
-    # test3
-    assert checkout(f"cd	{folderout};	7z	t	arx2.7z", "Everything is Ok"), "test3 FAIL"
-
-
-def test_step4():
-    # test4
-    assert checkout(f"cd {folderout}; 7z l arx2.7z", "Name\n----"), "test4 FAIL"
-
-
-def test_step5():
-    # test5
-    assert checkout(f"cd {folderout}; 7z x arx2.7z -o{folderin} -y", "Everything is Ok"), "test5 FAIL"
+if __name__ == '__main__':
+    pytest.main(['-vv'])
